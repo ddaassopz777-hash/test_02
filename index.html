@@ -42,6 +42,10 @@
       gap: 10px;
     }
 
+    .title-wrapper {
+      flex-grow: 1;
+    }
+
     .title {
       font-size: 16px;
       font-weight: 600;
@@ -50,6 +54,7 @@
       outline: none;
       border-bottom: 1px dashed transparent;
       transition: border-color 0.2s;
+      display: inline-block;
     }
 
     .title:hover, .title:focus {
@@ -59,8 +64,62 @@
     .subtitle {
       font-size: 11px;
       color: var(--subtext-color);
-      white-space: nowrap;
       margin-top: 3px;
+    }
+
+    .settings-btn {
+      background: transparent;
+      border: none;
+      color: var(--subtext-color);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .settings-btn:hover {
+      color: var(--accent-color);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Панель настроек (скрытая по умолчанию) */
+    .settings-panel {
+      display: none;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      font-size: 12px;
+      gap: 8px;
+      flex-direction: column;
+    }
+
+    .settings-panel.active {
+      display: flex;
+    }
+
+    .settings-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .settings-input {
+      width: 70px;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      font-size: 13px;
+      padding: 4px 6px;
+      border-radius: 4px;
+      text-align: center;
+      outline: none;
+    }
+
+    .settings-input:focus {
+      border-color: var(--accent-color);
     }
 
     .progress-bar-bg {
@@ -93,4 +152,255 @@
 
     .stat-box {
       display: flex;
-      flex-direction: column
+      flex-direction: column;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: var(--subtext-color);
+      margin-bottom: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--text-color);
+    }
+
+    .controls-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .input-row label {
+      font-size: 13px;
+      color: var(--subtext-color);
+    }
+
+    .number-input {
+      width: 90px;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      color: var(--accent-color);
+      font-size: 15px;
+      font-weight: bold;
+      padding: 6px 10px;
+      border-radius: 6px;
+      text-align: center;
+      outline: none;
+    }
+
+    .number-input:focus {
+      border-color: var(--accent-color);
+    }
+
+    /* Ползунок слайдера */
+    .slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--bar-bg);
+      outline: none;
+      margin-top: 4px;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-color);
+      cursor: pointer;
+      box-shadow: 0 0 6px rgba(0,0,0,0.4);
+      transition: transform 0.1s;
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-color);
+      cursor: pointer;
+      border: none;
+    }
+
+    /* Убираем стрелочки у input number */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="widget-container">
+    <div class="header">
+      <div class="title-wrapper">
+        <div id="widgetTitle" class="title" contenteditable="true" spellcheck="false">📜 Скрафтить таблички (PoE2)</div>
+        <div id="subtitle" class="subtitle">6 вкладок / 576 слотов</div>
+      </div>
+      <button id="toggleSettings" class="settings-btn" title="Настройки">⚙️</button>
+    </div>
+
+    <!-- Выпадающая панель настроек -->
+    <div id="settingsPanel" class="settings-panel">
+      <div class="settings-row">
+        <span>Количество вкладок:</span>
+        <input type="number" id="tabsCountInput" min="1" max="50" value="6" class="settings-input">
+      </div>
+      <div class="settings-row">
+        <span>Слотов на 1 вкладку:</span>
+        <input type="number" id="slotsPerTabInput" min="1" max="500" value="96" class="settings-input">
+      </div>
+    </div>
+
+    <!-- Прогресс бар -->
+    <div class="progress-bar-bg">
+      <div id="progressFill" class="progress-bar-fill"></div>
+    </div>
+
+    <!-- Статистика -->
+    <div class="stats-grid">
+      <div class="stat-box">
+        <span class="stat-label">Заполнено</span>
+        <span id="readyPercent" class="stat-value">0%</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Осталось сделать</span>
+        <span id="remainingText" class="stat-value">576 шт. (100%)</span>
+      </div>
+    </div>
+
+    <!-- Интерактивное управление -->
+    <div class="controls-group">
+      <div class="input-row">
+        <label for="currentCount">Количество табличек:</label>
+        <input type="number" id="currentCount" min="0" max="576" value="0" class="number-input">
+      </div>
+      
+      <!-- Ползунок -->
+      <input type="range" id="tabletSlider" min="0" max="576" value="0" class="slider">
+    </div>
+  </div>
+
+  <script>
+    const titleEl = document.getElementById('widgetTitle');
+    const subtitleEl = document.getElementById('subtitle');
+    const toggleSettingsBtn = document.getElementById('toggleSettings');
+    const settingsPanel = document.getElementById('settingsPanel');
+    const tabsCountInput = document.getElementById('tabsCountInput');
+    const slotsPerTabInput = document.getElementById('slotsPerTabInput');
+    
+    const inputEl = document.getElementById('currentCount');
+    const sliderEl = document.getElementById('tabletSlider');
+    const fillEl = document.getElementById('progressFill');
+    const readyPercentEl = document.getElementById('readyPercent');
+    const remainingTextEl = document.getElementById('remainingText');
+
+    // Загрузка настроек из LocalStorage
+    const savedTitle = localStorage.getItem('poe2_widget_title');
+    if (savedTitle !== null) titleEl.textContent = savedTitle;
+
+    let tabsCount = parseInt(localStorage.getItem('poe2_tabs_count')) || 6;
+    let slotsPerTab = parseInt(localStorage.getItem('poe2_slots_per_tab')) || 96;
+    
+    tabsCountInput.value = tabsCount;
+    slotsPerTabInput.value = slotsPerTab;
+
+    let MAX_SLOTS = tabsCount * slotsPerTab;
+
+    const savedCount = localStorage.getItem('poe2_tablets_count');
+    let currentCount = savedCount !== null ? parseInt(savedCount) : 0;
+
+    // Переключение панели настроек
+    toggleSettingsBtn.addEventListener('click', () => {
+      settingsPanel.classList.toggle('active');
+    });
+
+    // Расчет и обновление интерфейса
+    function updateStats(val) {
+      currentCount = parseInt(val);
+      if (isNaN(currentCount) || currentCount < 0) currentCount = 0;
+      if (currentCount > MAX_SLOTS) currentCount = MAX_SLOTS;
+
+      // Синхронизация инпута и слайдера
+      inputEl.value = currentCount;
+      sliderEl.value = currentCount;
+
+      const readyPercent = ((currentCount / MAX_SLOTS) * 100).toFixed(1);
+      const remainingCount = MAX_SLOTS - currentCount;
+      const remainingPercent = ((remainingCount / MAX_SLOTS) * 100).toFixed(1);
+
+      // Визуальные изменения
+      fillEl.style.width = readyPercent + '%';
+      readyPercentEl.textContent = readyPercent + '%';
+      remainingTextEl.textContent = `${remainingCount} шт. (${remainingPercent}%)`;
+      subtitleEl.textContent = `${tabsCount} вкладок / ${MAX_SLOTS} слотов`;
+
+      // Сохранение
+      localStorage.setItem('poe2_tablets_count', currentCount);
+    }
+
+    // Изменение настроек вкладок
+    function updateMaxSlots() {
+      tabsCount = parseInt(tabsCountInput.value) || 1;
+      slotsPerTab = parseInt(slotsPerTabInput.value) || 1;
+      MAX_SLOTS = tabsCount * slotsPerTab;
+
+      // Обновляем лимиты полей ввода и слайдера
+      inputEl.max = MAX_SLOTS;
+      sliderEl.max = MAX_SLOTS;
+
+      // Сохраняем в память
+      localStorage.setItem('poe2_tabs_count', tabsCount);
+      localStorage.setItem('poe2_slots_per_tab', slotsPerTab);
+
+      // Пересчитываем текущее значение с учетом нового максимума
+      updateStats(currentCount);
+    }
+
+    tabsCountInput.addEventListener('input', updateMaxSlots);
+    slotsPerTabInput.addEventListener('input', updateMaxSlots);
+
+    // События ввода значения
+    inputEl.addEventListener('input', (e) => updateStats(e.target.value));
+    sliderEl.addEventListener('input', (e) => updateStats(e.target.value));
+
+    // Сохранение отредактированного заголовка
+    titleEl.addEventListener('blur', () => {
+      localStorage.setItem('poe2_widget_title', titleEl.textContent.trim());
+    });
+    titleEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        titleEl.blur();
+      }
+    });
+
+    // Инициализация при старте
+    inputEl.max = MAX_SLOTS;
+    sliderEl.max = MAX_SLOTS;
+    updateStats(currentCount);
+  </script>
+</body>
+</html>
