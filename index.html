@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PoE2 Stash Progress</title>
+  <style>
+    :root {
+      --bg-color: #191919;
+      --card-bg: #222225;
+      --accent-color: #e0a96d; /* Золотисто-янтарный PoE стиль */
+      --text-color: #e3e3e3;
+      --subtext-color: #999;
+      --border-color: #333338;
+      --bar-bg: #2c2c30;
+    }
+
+    body {
+      margin: 0;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      box-sizing: border-box;
+    }
+
+    .widget-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 16px 20px;
+      max-width: 450px;
+      margin: 0 auto;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--accent-color);
+      letter-spacing: 0.5px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: var(--subtext-color);
+    }
+
+    .progress-bar-bg {
+      background-color: var(--bar-bg);
+      height: 14px;
+      border-radius: 7px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      border: 1px solid var(--border-color);
+    }
+
+    .progress-bar-fill {
+      background: linear-gradient(90deg, #c47d33, #e0a96d);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+      border-radius: 7px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+      background: rgba(0,0,0,0.15);
+      padding: 10px;
+      border-radius: 6px;
+    }
+
+    .stat-box {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--subtext-color);
+      margin-bottom: 2px;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--text-color);
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .input-group label {
+      font-size: 13px;
+      color: var(--subtext-color);
+    }
+
+    .number-input {
+      width: 90px;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      color: var(--accent-color);
+      font-size: 16px;
+      font-weight: bold;
+      padding: 6px 10px;
+      border-radius: 6px;
+      text-align: center;
+      outline: none;
+    }
+
+    .number-input:focus {
+      border-color: var(--accent-color);
+    }
+
+    /* Убираем стрелочки у input number */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="widget-container">
+    <div class="header">
+      <div class="title">📜 Скрафтить таблички (PoE2)</div>
+      <div class="subtitle">6 вкладок / 576 слотов</div>
+    </div>
+
+    <!-- Прогресс бар -->
+    <div class="progress-bar-bg">
+      <div id="progressFill" class="progress-bar-fill"></div>
+    </div>
+
+    <!-- Статистика -->
+    <div class="stats-grid">
+      <div class="stat-box">
+        <span class="stat-label">Готово</span>
+        <span id="readyPercent" class="stat-value">0%</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Осталось сделать</span>
+        <span id="remainingText" class="stat-value">576 шт. (100%)</span>
+      </div>
+    </div>
+
+    <!-- Поле ввода -->
+    <div class="input-group">
+      <label for="currentCount">Собрано табличек:</label>
+      <input type="number" id="currentCount" min="0" max="576" value="0">
+    </div>
+  </div>
+
+  <script>
+    const MAX_SLOTS = 576;
+    const inputEl = document.getElementById('currentCount');
+    const fillEl = document.getElementById('progressFill');
+    const readyPercentEl = document.getElementById('readyPercent');
+    const remainingTextEl = document.getElementById('remainingText');
+
+    // Загрузка из LocalStorage
+    const savedCount = localStorage.getItem('poe2_tablets_count');
+    if (savedCount !== null) {
+      inputEl.value = savedCount;
+    }
+
+    function updateStats() {
+      let current = parseInt(inputEl.value) || 0;
+
+      // Ограничения от 0 до 576
+      if (current < 0) current = 0;
+      if
