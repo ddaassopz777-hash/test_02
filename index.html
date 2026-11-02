@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PoE2 Stash Progress</title>
+  <title>PoE2 Stash Tracker</title>
   <style>
     :root {
       --bg-color: #191919;
       --card-bg: #222225;
-      --accent-color: #e0a96d; /* Золотисто-янтарный PoE стиль */
+      --accent-color: #e0a96d; /* PoE Golden accent */
       --text-color: #e3e3e3;
       --subtext-color: #999;
       --border-color: #333338;
@@ -37,8 +37,9 @@
     .header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       margin-bottom: 12px;
+      gap: 10px;
     }
 
     .title {
@@ -46,11 +47,20 @@
       font-weight: 600;
       color: var(--accent-color);
       letter-spacing: 0.5px;
+      outline: none;
+      border-bottom: 1px dashed transparent;
+      transition: border-color 0.2s;
+    }
+
+    .title:hover, .title:focus {
+      border-bottom-color: var(--accent-color);
     }
 
     .subtitle {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--subtext-color);
+      white-space: nowrap;
+      margin-top: 3px;
     }
 
     .progress-bar-bg {
@@ -66,7 +76,7 @@
       background: linear-gradient(90deg, #c47d33, #e0a96d);
       height: 100%;
       width: 0%;
-      transition: width 0.3s ease;
+      transition: width 0.15s ease-out;
       border-radius: 7px;
     }
 
@@ -75,117 +85,12 @@
       grid-template-columns: 1fr 1fr;
       gap: 12px;
       margin-bottom: 16px;
-      background: rgba(0,0,0,0.15);
-      padding: 10px;
+      background: rgba(0,0,0,0.2);
+      padding: 10px 14px;
       border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.03);
     }
 
     .stat-box {
       display: flex;
-      flex-direction: column;
-    }
-
-    .stat-label {
-      font-size: 11px;
-      color: var(--subtext-color);
-      margin-bottom: 2px;
-      text-transform: uppercase;
-    }
-
-    .stat-value {
-      font-size: 16px;
-      font-weight: bold;
-      color: var(--text-color);
-    }
-
-    .input-group {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .input-group label {
-      font-size: 13px;
-      color: var(--subtext-color);
-    }
-
-    .number-input {
-      width: 90px;
-      background: var(--bg-color);
-      border: 1px solid var(--border-color);
-      color: var(--accent-color);
-      font-size: 16px;
-      font-weight: bold;
-      padding: 6px 10px;
-      border-radius: 6px;
-      text-align: center;
-      outline: none;
-    }
-
-    .number-input:focus {
-      border-color: var(--accent-color);
-    }
-
-    /* Убираем стрелочки у input number */
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-    input[type=number] {
-      -moz-appearance: textfield;
-    }
-  </style>
-</head>
-<body>
-
-  <div class="widget-container">
-    <div class="header">
-      <div class="title">📜 Скрафтить таблички (PoE2)</div>
-      <div class="subtitle">6 вкладок / 576 слотов</div>
-    </div>
-
-    <!-- Прогресс бар -->
-    <div class="progress-bar-bg">
-      <div id="progressFill" class="progress-bar-fill"></div>
-    </div>
-
-    <!-- Статистика -->
-    <div class="stats-grid">
-      <div class="stat-box">
-        <span class="stat-label">Готово</span>
-        <span id="readyPercent" class="stat-value">0%</span>
-      </div>
-      <div class="stat-box">
-        <span class="stat-label">Осталось сделать</span>
-        <span id="remainingText" class="stat-value">576 шт. (100%)</span>
-      </div>
-    </div>
-
-    <!-- Поле ввода -->
-    <div class="input-group">
-      <label for="currentCount">Собрано табличек:</label>
-      <input type="number" id="currentCount" min="0" max="576" value="0">
-    </div>
-  </div>
-
-  <script>
-    const MAX_SLOTS = 576;
-    const inputEl = document.getElementById('currentCount');
-    const fillEl = document.getElementById('progressFill');
-    const readyPercentEl = document.getElementById('readyPercent');
-    const remainingTextEl = document.getElementById('remainingText');
-
-    // Загрузка из LocalStorage
-    const savedCount = localStorage.getItem('poe2_tablets_count');
-    if (savedCount !== null) {
-      inputEl.value = savedCount;
-    }
-
-    function updateStats() {
-      let current = parseInt(inputEl.value) || 0;
-
-      // Ограничения от 0 до 576
-      if (current < 0) current = 0;
-      if
+      flex-direction: column
